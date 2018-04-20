@@ -2,22 +2,15 @@ import os
 import datetime
 import time
 from time import sleep
-#import MySQLdb
-import pyrebase
+import MySQLdb
+from firebase import firebase
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 from pypozyx import (POZYX_POS_ALG_UWB_ONLY, POZYX_3D, Coordinates, POZYX_SUCCESS, POZYX_ANCHOR_SEL_AUTO,
                      DeviceCoordinates, PozyxSerial, get_first_pozyx_serial_port, SingleRegister, DeviceList)
 from pythonosc.udp_client import SimpleUDPClient
-config = {
-    "apiKey:": "apiKey",
-    "authDomain": "capstone-ce683.firebaseapp.com",
-    "databaseURL": "https://capstone-ce683.firebaseio.com",
-    "storagebucket": "capstone-ce683.appspot.com"
-}
-firebase = pyrebase.initialize_app(config)
-db = firebase.database()
+firebase = firebase.FirebaseApplication('https://capstone-ce683.firebaseio.com/', None)
 
 onLEDPin = 23
 offLEDPin = 18
@@ -27,8 +20,8 @@ GPIO.setup(offLEDPin, GPIO.OUT)
 GPIO.setup(buttonPin, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 GPIO.output(offLEDPin, GPIO.HIGH)
 GPIO.output(onLEDPin, GPIO.LOW)
-#global c
-#global db
+global c
+global db
 inUse = 0
 x = 0
 y = 0
@@ -216,11 +209,15 @@ def main():
             in_use()
         insert_to_db()
         read_from_db()
+        maintenance = format_time()
+        data = {"ID": Id, "X": x, "Y": y, "InUse": inUse, "Maintenance": maintenance}
+        firebase.post('/Ventilator', data)
         time.sleep(2)
         
 if __name__=='__main__':
     try:
-        #db = MySQLdb.connect(host="35.225.129.78", user="root", passwd="password", db="PI_COORDINATES")
+        #35.225.129.78
+        db = MySQLdb.connect(host="localhost", user="root", passwd="password", db="PI_COORDINATES")
         c = db.cursor()
     except:
         print('main error')  
