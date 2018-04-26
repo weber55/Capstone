@@ -2,7 +2,6 @@ import os
 import datetime
 import time
 from time import sleep
-import MySQLdb
 from firebase import firebase
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
@@ -10,6 +9,7 @@ GPIO.setwarnings(False)
 from pypozyx import (POZYX_POS_ALG_UWB_ONLY, POZYX_3D, Coordinates, POZYX_SUCCESS, POZYX_ANCHOR_SEL_AUTO,
                      DeviceCoordinates, PozyxSerial, get_first_pozyx_serial_port, SingleRegister, DeviceList)
 from pythonosc.udp_client import SimpleUDPClient
+
 firebase = firebase.FirebaseApplication('https://capstone-ce683.firebaseio.com/', None)
 
 onLEDPin = 23
@@ -20,6 +20,7 @@ GPIO.setup(offLEDPin, GPIO.OUT)
 GPIO.setup(buttonPin, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 GPIO.output(offLEDPin, GPIO.HIGH)
 GPIO.output(onLEDPin, GPIO.LOW)
+
 global c
 global db
 inUse = 0
