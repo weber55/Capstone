@@ -197,22 +197,19 @@ def main():
                DeviceCoordinates(0x6E6F, 1, Coordinates(3429, 4114, 3175))]
     algorithm = POZYX_POS_ALG_UWB_ONLY  # positioning algorithm to use
     dimension = POZYX_3D                # positioning dimension
-    height = 1000                       # height of device, required in 2.5D positioning
+    height = 1000 # height of device, required in 2.5D positioning
+    
     pozyx = PozyxSerial(serial_port)
     r = ReadyToLocalize(pozyx, osc_udp_client, anchors, algorithm, dimension, height, remote_id)
     r.setup()
-    
     while 1:
-        print()
         r.loop()
         if not GPIO.input(buttonPin):
             in_use()
-        insert_to_db()
-        read_from_db()
         maintenance = format_time()
         data = {"ID": Id, "X": x, "Y": y, "InUse": inUse, "Maintenance": maintenance}
         firebase.post('/Ventilator', data)
-        time.sleep(2)
+        time.sleep(5)
         
 if __name__=='__main__':
     try:
